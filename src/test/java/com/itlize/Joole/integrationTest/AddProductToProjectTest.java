@@ -41,7 +41,7 @@ public class AddProductToProjectTest {
     public void addProductToProject() throws Exception{
         login();
 
-        String productId = "1";
+        String productId = "4";
         String projectId = "1";
 
         String token=Files.readString(Path.of("src/test/resources/jwt"), StandardCharsets.ISO_8859_1);

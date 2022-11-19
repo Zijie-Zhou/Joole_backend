@@ -16,6 +16,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 
 @SpringBootTest
@@ -23,9 +27,29 @@ import java.time.LocalDateTime;
 public class productManageTest {
     @Autowired
     MockMvc mockMvc;
+
+
+    @Test
+    public void login() throws Exception{
+
+        String username = "username1";
+        String password = "password";
+        ObjectMapper objectMapper= new ObjectMapper();
+        MvcResult mvcResult=mockMvc.perform(get("/user/login").param("username",username).param("password",password))
+                .andExpect(content().contentType(MediaType.valueOf("text/plain;charset=ISO-8859-1"))).andReturn();
+        String token=mvcResult.getResponse().getContentAsString();
+        Files.writeString(Path.of("src/test/resources/jwt"),token,
+                StandardCharsets.ISO_8859_1, StandardOpenOption.WRITE);
+    }
     @Test
     public void addProduct() throws Exception{
+
+        login();
+
+        String token = Files.readString(Path.of("src/test/resources/jwt"), StandardCharsets.ISO_8859_1);
+
         Product product=new Product();
+        product.setProductId(1);
         product.setProductName("productnamefortest");
         product.setBrand("brand");
         product.setType("searchType");
@@ -43,7 +67,7 @@ public class productManageTest {
         product.setAccessories("accessories");
         product.setType("nameforsearch");
         ObjectMapper objectMapper= JsonMapper.builder().addModule(new JavaTimeModule()).build();
-        mockMvc.perform(post("/add_product").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(product)));
+        mockMvc.perform(post("/product/add_product").header("Authorization","Bearer "+token).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(product)));
     }
 
 

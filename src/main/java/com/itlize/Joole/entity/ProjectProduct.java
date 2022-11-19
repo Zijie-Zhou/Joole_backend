@@ -1,6 +1,8 @@
 package com.itlize.Joole.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 
 @Entity
@@ -12,10 +14,12 @@ public class ProjectProduct {
     @Column(name="PR_id")
     private Integer id;
 
+    @JsonIgnore
     @ManyToOne(cascade=CascadeType.DETACH)
     @JoinColumn(name="product_id")
     private Product product;
 
+    @JsonIgnore
     @ManyToOne(cascade=CascadeType.DETACH)
     @JoinColumn(name="project_id")
     private Project project;
